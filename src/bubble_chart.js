@@ -67,9 +67,9 @@ function bubbleChart() {
     .friction(0.9);
 
   function stats_to_rgb(d) {
-    r = Math.round(d.energy * 255);
-    g = Math.round(d.instrumentalness * 255);
-    b = Math.round(d.valence * 255);
+    g = Math.round(d.energy * 2);
+    b = Math.round(d.instrumentalness * 255);
+    r = Math.round(d.valence * 255);
 
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 
