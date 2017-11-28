@@ -20,12 +20,6 @@ function bubbleChart() {
   // on which view mode is selected.
   var center = { x: width / 2, y: height / 2 };
 
-  var yearCenters = {
-    2008: { x: width / 3, y: height / 2 },
-    2009: { x: width / 2, y: height / 2 },
-    2010: { x: 2 * width / 3, y: height / 2 }
-  };
-
   var bounds = {
     left: { x: width / 3, y: height / 2 },
     right: { x: 2 * width / 3, y: height / 2 }
@@ -67,6 +61,12 @@ function bubbleChart() {
     'valence': 0
   }
 
+  var rgb = {
+    'r': 'danceability',
+    'g': 'energy',
+    'b': 'instrumentalness'
+  }
+
   // Charge function that is called for each node.
   // Charge is proportional to the diameter of the
   // circle (which is stored in the radius attribute
@@ -92,9 +92,10 @@ function bubbleChart() {
     .friction(0.9);
 
   function stats_to_rgb(d) {
-    charR = 'valence';
-    charG = 'valence';
-    charB = 'valence';
+
+    charR = rgb['r'];
+    charG = rgb['g'];
+    charB = rgb['b'];
 
     r = Math.round((d[charR] - min[charR]) / (max[charR] - min[charR]) * 255);
     g = Math.round((d[charG] - min[charG]) / (max[charG] - min[charG]) * 255);
@@ -149,6 +150,8 @@ function bubbleChart() {
         }
       }
     }
+
+    console.log(rgb['r'])
 
 
     var myNodes = rawData.map(function (d) {
@@ -442,6 +445,14 @@ function bubbleChart() {
       alignBubbles(displayName);
   };
 
+  chart.updateColor = function(color, characteristic) {
+    rgb[color] = characteristic;
+
+    bubbles
+      .attr('fill', function (d) { return stats_to_rgb(d); })
+      .attr('stroke', function (d) { return d3.rgb(stats_to_rgb(d)).darker(); })
+  }
+
   // return the chart function from closure.
   return chart;
 }
@@ -473,15 +484,11 @@ function setupButtons() {
   d3.select('#toolbar')
     .selectAll('.button')
     .on('click', function () {
+
       // Remove active class from all buttons
-      d3.selectAll('.button').classed('active', false);
+      d3.select('#toolbar').selectAll('.button').classed('active', false);
       // Find the button just clicked
       var button = d3.select(this);
-
-      // if (button[0][0].className != "button")
-      //   button.classed('active', false)
-      // else
-      //   button.classed('active', true)
 
       // Set it as the active button
       button.classed('active', true);
@@ -493,6 +500,67 @@ function setupButtons() {
       // the currently clicked button.
       myBubbleChart.toggleDisplay(buttonId);
     });
+
+    d3.select('#red')
+    .selectAll('.button')
+    .on('click', function () {
+      
+      // Remove active class from all buttons
+      d3.select('#red').selectAll('.button').classed('active', false);
+      // Find the button just clicked
+      var button = d3.select(this);
+
+      // Set it as the active button
+      button.classed('active', true);
+
+      // Get the id of the button
+      var buttonId = button.attr('id');
+
+      // Toggle the bubble chart based on
+      // the currently clicked button.
+      myBubbleChart.updateColor('r', buttonId);
+    });
+
+    d3.select('#green')
+    .selectAll('.button')
+    .on('click', function () {
+      
+      // Remove active class from all buttons
+      d3.select('#green').selectAll('.button').classed('active', false);
+      // Find the button just clicked
+      var button = d3.select(this);
+
+      // Set it as the active button
+      button.classed('active', true);
+
+      // Get the id of the button
+      var buttonId = button.attr('id');
+
+      // Toggle the bubble chart based on
+      // the currently clicked button.
+      myBubbleChart.updateColor('g', buttonId);
+    });
+
+    d3.select('#blue')
+    .selectAll('.button')
+    .on('click', function () {
+      
+      // Remove active class from all buttons
+      d3.select('#blue').selectAll('.button').classed('active', false);
+      // Find the button just clicked
+      var button = d3.select(this);
+
+      // Set it as the active button
+      button.classed('active', true);
+
+      // Get the id of the button
+      var buttonId = button.attr('id');
+
+      // Toggle the bubble chart based on
+      // the currently clicked button.
+      myBubbleChart.updateColor('b', buttonId);
+    });
+
 }
 
 /*

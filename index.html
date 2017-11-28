@@ -13,11 +13,11 @@
 <body>
   <div class="container">
     <h1>Spotify Genre Characteristics</h1>
-    <div id="toolbar">
-<!--       <a href="#" id="all" class="button active">All Grants</a>
-      <a href="#" id="year" class="button">Grants By Year</a>
- -->    
 
+    <h2>Overview of genre characteristics</h2>
+
+    <h3> Order By </h3>
+    <div id="toolbar">
       <a href="#" id="circle" class="button active">Circle</a>
       <a href="#" id="total_count" class="button">Count</a>
       <a href="#" id="danceability" class="button">Danceability</a>
@@ -26,9 +26,37 @@
       <a href="#" id="speechiness" class="button">Speechiness</a>
       <a href="#" id="tempo" class="button">Tempo</a>
       <a href="#" id="valence" class="button">Valence</a>
-
     </div>
-    <h2>Overview of genre characteristics</h2>
+
+    <h3> Color with </h3>
+    <div id="red">
+      <a href="#" id="danceability" class="button active">Danceability</a>
+      <a href="#" id="energy" class="button">Energy</a>
+      <a href="#" id="instrumentalness" class="button">Instrumentalness</a>
+      <a href="#" id="speechiness" class="button">Speechiness</a>
+      <a href="#" id="tempo" class="button">Tempo</a>
+      <a href="#" id="valence" class="button">Valence</a>
+    </div>
+<br>
+    <div id="green">
+      <a href="#" id="danceability" class="button">Danceability</a>
+      <a href="#" id="energy" class="button active">Energy</a>
+      <a href="#" id="instrumentalness" class="button">Instrumentalness</a>
+      <a href="#" id="speechiness" class="button">Speechiness</a>
+      <a href="#" id="tempo" class="button">Tempo</a>
+      <a href="#" id="valence" class="button">Valence</a>
+    </div>
+<br>
+
+    <div id="blue">
+      <a href="#" id="danceability" class="button">Danceability</a>
+      <a href="#" id="energy" class="button">Energy</a>
+      <a href="#" id="instrumentalness" class="button active">Instrumentalness</a>
+      <a href="#" id="speechiness" class="button">Speechiness</a>
+      <a href="#" id="tempo" class="button">Tempo</a>
+      <a href="#" id="valence" class="button">Valence</a>
+    </div>
+
     <p>Size of bubble = total number of tracks from 1960 - mid2017<br>
        RGB of bubble = scaled average characteristics</p>
     <div id="vis"></div>
