@@ -26,6 +26,11 @@ function bubbleChart() {
     2010: { x: 2 * width / 3, y: height / 2 }
   };
 
+  var bounds = {
+    left: { x: width / 3, y: height / 2 },
+    right: { x: 2 * width / 3, y: height / 2 }
+  }
+
   // X locations of the year titles.
   var yearsTitleX = {
     2008: 160,
@@ -41,6 +46,26 @@ function bubbleChart() {
   var svg = null;
   var bubbles = null;
   var nodes = [];
+
+  var min = {
+    'total_count': 100,
+    'danceability': 1,
+    'energy': 1,
+    'instrumentalness': 1,
+    'speechiness': 1,
+    'tempo': 100,
+    'valence': 1
+  }
+
+  var max = {
+    'total_count': 0,
+    'danceability': 0,
+    'energy': 0,
+    'instrumentalness': 0,
+    'speechiness': 0,
+    'tempo': 0,
+    'valence': 0
+  }
 
   // Charge function that is called for each node.
   // Charge is proportional to the diameter of the
@@ -67,9 +92,13 @@ function bubbleChart() {
     .friction(0.9);
 
   function stats_to_rgb(d) {
-    g = Math.round(d.energy * 2);
-    b = Math.round(d.instrumentalness * 255);
-    r = Math.round(d.valence * 255);
+    charR = 'valence';
+    charG = 'valence';
+    charB = 'valence';
+
+    r = Math.round((d[charR] - min[charR]) / (max[charR] - min[charR]) * 255);
+    g = Math.round((d[charG] - min[charG]) / (max[charG] - min[charG]) * 255);
+    b = Math.round((d[charB] - min[charB]) / (max[charB] - min[charB]) * 255);
 
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
 
@@ -79,10 +108,10 @@ function bubbleChart() {
     // d.valence
   }
 
-  // Nice looking colors - no reason to buck the trend
-  var fillColor = d3.scale.ordinal()
-    .domain(['low', 'medium', 'high'])
-    .range(['#d84b2a', '#beccae', '#7aa25c']);
+  // // Nice looking colors - no reason to buck the trend
+  // var fillColor = d3.scale.ordinal()
+  //   .domain(['low', 'medium', 'high'])
+  //   .range(['#d84b2a', '#beccae', '#7aa25c']);
 
   // Sizes bubbles based on their area instead of raw radius
   var radiusScale = d3.scale.pow()
@@ -105,6 +134,23 @@ function bubbleChart() {
     // Use map() to convert raw data into node data.
     // Checkout http://learnjsdata.com/ for more on
     // working with data.
+
+    // initialize stats
+
+    characteristics = ['total_count', 'danceability', 'energy', 'instrumentalness', 'speechiness','tempo', 'valence'];
+    for (i = 0; i < rawData.length; i++) {
+      for (j = 0; j < characteristics.length; j++) {
+        stat = characteristics[j]
+        if (rawData[i][stat] < min[stat]) {
+          min[stat] = parseFloat(rawData[i][stat])
+        }
+        if (rawData[i][stat] > max[stat]) {
+          max[stat] = parseFloat(rawData[i][stat])
+        }
+      }
+    }
+
+
     var myNodes = rawData.map(function (d) {
       return {
         id: d.genre,
@@ -113,6 +159,7 @@ function bubbleChart() {
         // name: d.grant_title,
 
         radius: radiusScale(+d.total_count),
+        total_count: d.total_count,
         value: d.total_count,
         name: d.genre,
         danceability: d.danceability,
@@ -149,11 +196,12 @@ function bubbleChart() {
    * a d3 loading function like d3.csv.
    */
   var chart = function chart(selector, rawData) {
+
     // Use the max total_amount in the data as the max in the scale's domain
     // note we have to ensure the total_amount is a number by converting it
     // with `+`.
     // var maxAmount = d3.max(rawData, function (d) { return +d.total_amount; });
-        var maxAmount = d3.max(rawData, function (d) { return +d.total_count; });
+    var maxAmount = d3.max(rawData, function (d) { return +d.total_count; });
 
     radiusScale.domain([0, maxAmount]);
 
@@ -304,6 +352,35 @@ function bubbleChart() {
   }
 
 
+
+  function alignBubbles(characteristic) {
+    // show labels
+
+    force.on('tick', function (e) {
+      bubbles.each(moveToTimeline(e.alpha, characteristic))
+        .attr('cx', function (d) { return d.x; })
+        .attr('cy', function (d) { return d.y; });
+    });
+
+    force.start();
+
+  }
+
+  function moveToTimeline(alpha, characteristic) {
+    return function (d) {
+      scale = (d[characteristic] - min[characteristic]) / (max[characteristic] - min[characteristic]);
+      left = bounds.left.x + scale * (bounds.right.x - bounds.left.x);
+      // target = leftRight[right] - leftRight[right] // d[characteristic]
+      // var target = yearCenters[d.year];
+      d.x = d.x + (left - d.x) * damper * alpha * 1.1;
+      // d.y = d.y + (target.y - d.y) * damper * alpha * 1.1;
+      d.y = d.y + (bounds.right.y - d.y) * damper * alpha * 1.1;
+    };
+  }
+
+
+
+
   /*
    * Function called on mouseover to display the
    * details of a bubble in the tooltip.
@@ -319,22 +396,22 @@ function bubbleChart() {
                   addCommas(d.value) +
                   '</span><br/>' +
                   '<span class="name">Danceability: </span><span class="value">' +
-                  d.danceability +
+                  d3.format(".2f")(d.danceability) +
                   '</span><br/>' +
                   '<span class="name">Energy: </span><span class="value">' +
-                  d.energy +
+                  d3.format(".2f")(d.energy) +
                   '</span><br/>' +
                   '<span class="name">Instrumentalness: </span><span class="value">' +
-                  d.instrumentalness +
+                  d3.format(".2f")(d.instrumentalness) +
                   '</span><br/>' +
                   '<span class="name">Speechiness: </span><span class="value">' +
-                  d.speechiness +
+                  d3.format(".2f")(d.speechiness) +
                   '</span><br/>' +
                   '<span class="name">Tempo: </span><span class="value">' +
-                  d.tempo +
+                  d3.format(".3g")(d.tempo) +
                   '</span><br/>' +
                   '<span class="name">Valence: </span><span class="value">' +
-                  d.valence +
+                  d3.format(".2f")(d.valence) +
                   '</span>';
     tooltip.showTooltip(content, d3.event);
   }
@@ -358,13 +435,12 @@ function bubbleChart() {
    * displayName is expected to be a string and either 'year' or 'all'.
    */
   chart.toggleDisplay = function (displayName) {
-    if (displayName === 'year') {
-      splitBubbles();
-    } else {
+    if (displayName === 'circle') {
       groupBubbles();
     }
+    else
+      alignBubbles(displayName);
   };
-
 
   // return the chart function from closure.
   return chart;
@@ -393,6 +469,7 @@ function display(error, data) {
  * Sets up the layout buttons to allow for toggling between view modes.
  */
 function setupButtons() {
+
   d3.select('#toolbar')
     .selectAll('.button')
     .on('click', function () {
@@ -400,6 +477,11 @@ function setupButtons() {
       d3.selectAll('.button').classed('active', false);
       // Find the button just clicked
       var button = d3.select(this);
+
+      // if (button[0][0].className != "button")
+      //   button.classed('active', false)
+      // else
+      //   button.classed('active', true)
 
       // Set it as the active button
       button.classed('active', true);
