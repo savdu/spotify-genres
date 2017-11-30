@@ -1,5 +1,4 @@
 
-
 /* bubbleChart creation function. Returns a function that will
  * instantiate a new bubble chart given a DOM element to display
  * it in and a dataset to visualize.
@@ -25,12 +24,10 @@ function bubbleChart() {
     right: { x: 2 * width / 3, y: height / 2 }
   }
 
-  // X locations of the year titles.
-  var yearsTitleX = {
-    2008: 160,
-    2009: width / 2,
-    2010: width - 160
-  };
+  var labelsX = {
+    'Low': width / 7,
+    'High': 6 * width / 7
+  }
 
   // Used when setting up force and
   // moving around nodes
@@ -102,17 +99,7 @@ function bubbleChart() {
     b = Math.round((d[charB] - min[charB]) / (max[charB] - min[charB]) * 255);
 
     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-
-    // d.danceability
-    // d.energy
-    // d.instrumentalness
-    // d.valence
   }
-
-  // // Nice looking colors - no reason to buck the trend
-  // var fillColor = d3.scale.ordinal()
-  //   .domain(['low', 'medium', 'high'])
-  //   .range(['#d84b2a', '#beccae', '#7aa25c']);
 
   // Sizes bubbles based on their area instead of raw radius
   var radiusScale = d3.scale.pow()
@@ -131,36 +118,22 @@ function bubbleChart() {
    * This function returns the new node array, with a node in that
    * array for each element in the rawData input.
    */
-  function createNodes(rawData) {
-    // Use map() to convert raw data into node data.
-    // Checkout http://learnjsdata.com/ for more on
-    // working with data.
 
+  function initializeStats(rawData) {
     // initialize stats
-
     characteristics = ['total_count', 'danceability', 'energy', 'instrumentalness', 'speechiness','tempo', 'valence'];
-    for (i = 0; i < rawData.length; i++) {
-      for (j = 0; j < characteristics.length; j++) {
-        stat = characteristics[j]
-        if (rawData[i][stat] < min[stat]) {
-          min[stat] = parseFloat(rawData[i][stat])
-        }
-        if (rawData[i][stat] > max[stat]) {
-          max[stat] = parseFloat(rawData[i][stat])
-        }
-      }
+    for (i = 0; i < characteristics.length; i++) {
+      stat = characteristics[i];
+      min[stat] = d3.min(rawData, function (d) { return +d[stat]; });
+      max[stat] = d3.max(rawData, function (d) { return +d[stat]; });
     }
+  }
 
-    console.log(rgb['r'])
-
+  function createNodes(rawData) {
 
     var myNodes = rawData.map(function (d) {
       return {
         id: d.genre,
-        // radius: radiusScale(+d.total_amount),
-        // value: d.total_amount,
-        // name: d.grant_title,
-
         radius: radiusScale(+d.total_count),
         total_count: d.total_count,
         value: d.total_count,
@@ -171,9 +144,6 @@ function bubbleChart() {
         speechiness: d.speechiness,
         tempo: d.tempo,
         valence: d.valence,
-        // org: d.organization,
-        // group: d.group,
-        // year: d.start_year,
         x: Math.random() * 900,
         y: Math.random() * 800
       };
@@ -204,10 +174,9 @@ function bubbleChart() {
     // note we have to ensure the total_amount is a number by converting it
     // with `+`.
     // var maxAmount = d3.max(rawData, function (d) { return +d.total_amount; });
-    var maxAmount = d3.max(rawData, function (d) { return +d.total_count; });
+    initializeStats(rawData);
 
-    radiusScale.domain([0, maxAmount]);
-
+    radiusScale.domain([0, max['total_count']]);
     nodes = createNodes(rawData);
     // Set the force's nodes to our newly created nodes array.
     force.nodes(nodes);
@@ -229,9 +198,6 @@ function bubbleChart() {
     bubbles.enter().append('circle')
       .classed('bubble', true)
       .attr('r', 0)
-      // .attr('fill', function (d) { return fillColor(d.group); })
-      // .attr('stroke', function (d) { return d3.rgb(fillColor(d.group)).darker(); })
-
 
       .attr('fill', function (d) { return stats_to_rgb(d); })
       .attr('stroke', function (d) { return d3.rgb(stats_to_rgb(d)).darker(); })
@@ -257,7 +223,7 @@ function bubbleChart() {
    * center of the visualization.
    */
   function groupBubbles() {
-    hideYears();
+    hideLabels();
 
     force.on('tick', function (e) {
       bubbles.each(moveToCenter(e.alpha))
@@ -290,74 +256,30 @@ function bubbleChart() {
   }
 
   /*
-   * Sets visualization in "split by year mode".
-   * The year labels are shown and the force layout
-   * tick function is set to move nodes to the
-   * yearCenter of their data's year.
-   */
-  function splitBubbles() {
-    showYears();
-
-    force.on('tick', function (e) {
-      bubbles.each(moveToYears(e.alpha))
-        .attr('cx', function (d) { return d.x; })
-        .attr('cy', function (d) { return d.y; });
-    });
-
-    force.start();
-  }
-
-  /*
-   * Helper function for "split by year mode".
-   * Returns a function that takes the data for a
-   * single node and adjusts the position values
-   * of that node to move it the year center for that
-   * node.
-   *
-   * Positioning is adjusted by the force layout's
-   * alpha parameter which gets smaller and smaller as
-   * the force layout runs. This makes the impact of
-   * this moving get reduced as each node gets closer to
-   * its destination, and so allows other forces like the
-   * node's charge force to also impact final location.
-   */
-  function moveToYears(alpha) {
-    return function (d) {
-      var target = yearCenters[d.year];
-      d.x = d.x + (target.x - d.x) * damper * alpha * 1.1;
-      d.y = d.y + (target.y - d.y) * damper * alpha * 1.1;
-    };
-  }
-
-  /*
    * Hides Year title displays.
    */
-  function hideYears() {
+  function hideLabels() {
     svg.selectAll('.year').remove();
   }
 
   /*
-   * Shows Year title displays.
+   * Shows Low and High labels.
    */
-  function showYears() {
-    // Another way to do this would be to create
-    // the year texts once and then just hide them.
-    var yearsData = d3.keys(yearsTitleX);
+   function showLabels() {
+    var labelsData = d3.keys(labelsX);
     var years = svg.selectAll('.year')
-      .data(yearsData);
+      .data(labelsData);
 
     years.enter().append('text')
       .attr('class', 'year')
-      .attr('x', function (d) { return yearsTitleX[d]; })
+      .attr('x', function (d) { return labelsX[d]; })
       .attr('y', 40)
       .attr('text-anchor', 'middle')
       .text(function (d) { return d; });
-  }
-
-
+   }
 
   function alignBubbles(characteristic) {
-    // show labels
+    showLabels();
 
     force.on('tick', function (e) {
       bubbles.each(moveToTimeline(e.alpha, characteristic))
@@ -366,23 +288,16 @@ function bubbleChart() {
     });
 
     force.start();
-
   }
 
   function moveToTimeline(alpha, characteristic) {
     return function (d) {
       scale = (d[characteristic] - min[characteristic]) / (max[characteristic] - min[characteristic]);
       left = bounds.left.x + scale * (bounds.right.x - bounds.left.x);
-      // target = leftRight[right] - leftRight[right] // d[characteristic]
-      // var target = yearCenters[d.year];
       d.x = d.x + (left - d.x) * damper * alpha * 1.1;
-      // d.y = d.y + (target.y - d.y) * damper * alpha * 1.1;
       d.y = d.y + (bounds.right.y - d.y) * damper * alpha * 1.1;
     };
   }
-
-
-
 
   /*
    * Function called on mouseover to display the
@@ -457,12 +372,204 @@ function bubbleChart() {
   return chart;
 }
 
+
+
+
+
+// function bubbleChart() {
+//   // Constants for sizing
+//   var width = 940;
+//   var height = 600;
+
+//   // These will be set in create_nodes and create_vis
+//   var svg = null;
+//   var bubbles = null;
+//   var nodes = [];
+
+//   var rgb = {
+//     'r': 'danceability',
+//     'g': 'energy',
+//     'b': 'instrumentalness'
+//   }
+
+//   function stats_to_rgb(d) {
+
+//     charR = rgb['r'];
+//     charG = rgb['g'];
+//     charB = rgb['b'];
+
+//     r = Math.round((d[charR] - min[charR]) / (max[charR] - min[charR]) * 255);
+//     g = Math.round((d[charG] - min[charG]) / (max[charG] - min[charG]) * 255);
+//     b = Math.round((d[charB] - min[charB]) / (max[charB] - min[charB]) * 255);
+
+//     return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+//   }
+
+//   function createNodes(rawData) {
+//     // initialize stats
+//     characteristics = ['total_count', 'danceability', 'energy', 'instrumentalness', 'speechiness','tempo', 'valence'];
+//     for (i = 0; i < rawData.length; i++) {
+//       for (j = 0; j < characteristics.length; j++) {
+//         stat = characteristics[j]
+//         if (rawData[i][stat] < min[stat]) {
+//           min[stat] = parseFloat(rawData[i][stat])
+//         }
+//         if (rawData[i][stat] > max[stat]) {
+//           max[stat] = parseFloat(rawData[i][stat])
+//         }
+//       }
+//     }
+
+//     var myNodes = rawData.map(function (d) {
+//       return {
+//         id: d.genre,
+//         radius: radiusScale(+d.total_count),
+//         total_count: d.total_count,
+//         value: d.total_count,
+//         name: d.genre,
+//         danceability: d.danceability,
+//         energy: d.energy,
+//         instrumentalness: d.instrumentalness,
+//         speechiness: d.speechiness,
+//         tempo: d.tempo,
+//         valence: d.valence,
+//         x: Math.random() * 900,
+//         y: Math.random() * 800
+//       };
+//     });
+
+//     // sort them to prevent occlusion of smaller nodes.
+//     myNodes.sort(function (a, b) { return b.value - a.value; });
+
+//     return myNodes;
+//   }
+
+  
+//    * Main entry point to the bubble chart. This function is returned
+//    * by the parent closure. It prepares the rawData for visualization
+//    * and adds an svg element to the provided selector and starts the
+//    * visualization creation process.
+//    *
+//    * selector is expected to be a DOM element or CSS selector that
+//    * points to the parent element of the bubble chart. Inside this
+//    * element, the code will add the SVG continer for the visualization.
+//    *
+//    * rawData is expected to be an array of data objects as provided by
+//    * a d3 loading function like d3.csv.
+   
+
+//   var chart = function chart(selector, rawData) {
+
+//     characteristic = 'energy'
+
+//     var data = rawData.forEach(function(d) {
+//       return d[characteristic];
+//     })
+
+//     var max = d3.max(data);
+//     var min = d3.min(data);
+//     var x = d3.scale.linear()
+//         .domain([min, max])
+//         .range([0, width]);
+
+//     // Generate a histogram using twenty uniformly-spaced bins.
+//     var data = d3.layout.histogram()
+//       .bins(x.ticks(20))
+//       (data);
+
+
+
+
+
+
+//     nodes = createNodes(rawData);
+//     // Set the force's nodes to our newly created nodes array.
+//     force.nodes(nodes);
+
+//     // Create a SVG element inside the provided selector
+//     // with desired size.
+//     svg = d3.select(selector)
+//       .append('svg')
+//       .attr('width', width)
+//       .attr('height', height);
+
+//     // Bind nodes data to what will become DOM elements to represent them.
+//     bubbles = svg.selectAll('.bubble')
+//       .data(nodes, function (d) { return d.id; });
+
+//     // Create new circle elements each with class `bubble`.
+//     // There will be one circle.bubble for each object in the nodes array.
+//     // Initially, their radius (r attribute) will be 0.
+//     bubbles.enter().append('circle')
+//       .classed('bubble', true)
+//       .attr('r', 0)
+
+//       .attr('fill', function (d) { return stats_to_rgb(d); })
+//       .attr('stroke', function (d) { return d3.rgb(stats_to_rgb(d)).darker(); })
+
+//       .attr('stroke-width', 2)
+//       .on('mouseover', showDetail)
+//       .on('mouseout', hideDetail);
+
+//     // Fancy transition to make bubbles appear, ending with the
+//     // correct radius
+//     bubbles.transition()
+//       .duration(2000)
+//       .attr('r', function (d) { return d.radius; });
+
+//     // Set initial layout to single group.
+//     groupBubbles();
+//   };
+
+
+//   /*
+//    * Externally accessible function (this is attached to the
+//    * returned chart function). Allows the visualization to toggle
+//    * between "single group" and "split by year" modes.
+//    *
+//    * displayName is expected to be a string and either 'year' or 'all'.
+//    */
+//   chart.toggleDisplay = function (displayName) {
+//     if (displayName === 'circle') {
+//       groupBubbles();
+//     }
+//     else
+//       alignBubbles(displayName);
+//   };
+
+//   chart.updateColor = function(color, characteristic) {
+//     rgb[color] = characteristic;
+
+//     bubbles
+//       .attr('fill', function (d) { return stats_to_rgb(d); })
+//       .attr('stroke', function (d) { return d3.rgb(stats_to_rgb(d)).darker(); })
+//   }
+
+//   // return the chart function from closure.
+//   return chart;
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /*
  * Below is the initialization code as well as some helper functions
  * to create a new bubble chart instance, load the data, and display it.
  */
 
 var myBubbleChart = bubbleChart();
+// var myHistogram = bubbleChart();
 
 /*
  * Function called once data is loaded from CSV.
@@ -474,6 +581,7 @@ function display(error, data) {
   }
 
   myBubbleChart('#vis', data);
+  // myHistogram('#dist', data);
 }
 
 /*
@@ -499,6 +607,7 @@ function setupButtons() {
       // Toggle the bubble chart based on
       // the currently clicked button.
       myBubbleChart.toggleDisplay(buttonId);
+      // myHistogram.toggleDisplay(buttonId);
     });
 
     d3.select('#red')
@@ -581,7 +690,6 @@ function addCommas(nStr) {
 }
 
 // Load the data.
-// d3.csv('data/gates_money.csv', display);
 d3.csv('data/track-stats-genre.csv', display);
 
 // setup the buttons.

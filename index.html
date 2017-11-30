@@ -9,67 +9,73 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/bubble_chart.css">
+  <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
 </head>
 <body>
   <div class="container">
     <h1>Spotify Genre Characteristics</h1>
 
-    <h2>Overview of genre characteristics</h2>
+    <h3 id="upper">characteristics by genre, averaged over all years</h2>
+    <p> Each bubble represents a Spotify genre. The size of the bubble is scaled to the total number of tracks whose albums are tagged as that genre from 1960 to mid 2017. The color of each bubble is determined by scaling the averages of the audio features selected below to RGB values.</p>
 
-    <h3> Order By </h3>
-    <div id="toolbar">
-      <a href="#" id="circle" class="button active">Circle</a>
-      <a href="#" id="total_count" class="button">Count</a>
-      <a href="#" id="danceability" class="button">Danceability</a>
-      <a href="#" id="energy" class="button">Energy</a>
-      <a href="#" id="instrumentalness" class="button">Instrumentalness</a>
-      <a href="#" id="speechiness" class="button">Speechiness</a>
-      <a href="#" id="tempo" class="button">Tempo</a>
-      <a href="#" id="valence" class="button">Valence</a>
-    </div>
-
-    <h3> Color with </h3>
+    <h4 id="upper"> color with (r, g, b)</h3>
     <div id="red">
-      <a href="#" id="danceability" class="button active">Danceability</a>
-      <a href="#" id="energy" class="button">Energy</a>
-      <a href="#" id="instrumentalness" class="button">Instrumentalness</a>
-      <a href="#" id="speechiness" class="button">Speechiness</a>
-      <a href="#" id="tempo" class="button">Tempo</a>
-      <a href="#" id="valence" class="button">Valence</a>
+      <a id="danceability" class="button active">Danceability</a>
+      <a id="energy" class="button">Energy</a>
+      <a id="instrumentalness" class="button">Instrumentalness</a>
+      <a id="speechiness" class="button">Speechiness</a>
+      <a id="tempo" class="button">Tempo</a>
+      <a id="valence" class="button">Valence</a>
     </div>
 <br>
-    <div id="green">
-      <a href="#" id="danceability" class="button">Danceability</a>
-      <a href="#" id="energy" class="button active">Energy</a>
-      <a href="#" id="instrumentalness" class="button">Instrumentalness</a>
-      <a href="#" id="speechiness" class="button">Speechiness</a>
-      <a href="#" id="tempo" class="button">Tempo</a>
-      <a href="#" id="valence" class="button">Valence</a>
+      <div id="green">
+      <a id="danceability" class="button">Danceability</a>
+      <a id="energy" class="button active">Energy</a>
+      <a id="instrumentalness" class="button">Instrumentalness</a>
+      <a id="speechiness" class="button">Speechiness</a>
+      <a id="tempo" class="button">Tempo</a>
+      <a id="valence" class="button">Valence</a>
     </div>
 <br>
 
-    <div id="blue">
-      <a href="#" id="danceability" class="button">Danceability</a>
-      <a href="#" id="energy" class="button">Energy</a>
-      <a href="#" id="instrumentalness" class="button active">Instrumentalness</a>
-      <a href="#" id="speechiness" class="button">Speechiness</a>
-      <a href="#" id="tempo" class="button">Tempo</a>
-      <a href="#" id="valence" class="button">Valence</a>
+      <div id="blue">
+      <a id="danceability" class="button">Danceability</a>
+      <a id="energy" class="button">Energy</a>
+      <a id="instrumentalness" class="button active">Instrumentalness</a>
+      <a id="speechiness" class="button">Speechiness</a>
+      <a id="tempo" class="button">Tempo</a>
+      <a id="valence" class="button">Valence</a>
     </div>
 
-    <p>Size of bubble = total number of tracks from 1960 - mid2017<br>
-       RGB of bubble = scaled average characteristics</p>
     <div id="vis"></div>
+
+    <h4 id="upper"> view by </h3>
+    <div id="toolbar">
+      <a id="circle" class="button active">Circle</a>
+      <a id="total_count" class="button">Count</a>
+      <a id="danceability" class="button">Danceability</a>
+      <a id="energy" class="button">Energy</a>
+      <a id="instrumentalness" class="button">Instrumentalness</a>
+      <a id="speechiness" class="button">Speechiness</a>
+      <a id="tempo" class="button">Tempo</a>
+      <a id="valence" class="button">Valence</a>
+    </div>
+
+    <div id="dist"></div>
 
 <!--     <div class="footer">
       <p>A demonstration of animated bubble charts in JavaScript and D3.js</p>
       <p><a href="http://vallandingham.me/bubble_charts_in_js.html">Blog Post</a> | <a href="https://github.com/vlandham/bubble_chart">Code</a></p>
     </div> -->
+
+    <h2> 
+
   </div>
 
   <script src="lib/d3.js"></script>
   <script src="src/tooltip.js"></script>
   <script src="src/bubble_chart.js"></script>
+  <script src="src/histogram.js"></script>
 
 </body>
 </html>

@@ -2,9 +2,20 @@ a, a:visited, a:active {
   color: #444;
 }
 
+body {
+  font-family: 'Work sans', sans-serif;
+}
+
+#upper {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
 .container {
   max-width: 900px;
   margin: auto;
+  margin-left: 10%;
+  margin-right: 10%;
 }
 
 .button {
@@ -25,7 +36,7 @@ a, a:visited, a:active {
 
 #vis {
   width: 940px;
-  height: 600px;
+  height: 530px;
   clear: both;
   margin-bottom: 10px;
 }
