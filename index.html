@@ -9,17 +9,18 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/bubble_chart.css">
+  <link rel="stylesheet" href="css/timeline.css">
   <link href="https://fonts.googleapis.com/css?family=Work+Sans" rel="stylesheet">
 </head>
 <body>
   <div class="container">
-    <h1>Spotify Genre Characteristics</h1>
+    <h1>Visualizing and predicting Spotify genre characteristics</h1>
 
-    <h3 id="upper">characteristics by genre, averaged over all years</h2>
-    <p> Each bubble represents a Spotify genre. The size of the bubble is scaled to the total number of tracks whose albums are tagged as that genre from 1960 to mid 2017. The color of each bubble is determined by scaling the averages of the audio features selected below to RGB values.</p>
+    <h3 id="upper">characteristics by genre, averaged over all years</h3>
+    <p> Each bubble represents a Spotify genre. The size of the bubble is scaled to the total number of tracks whose albums are tagged as that genre from 1960 to mid 2017. The color of each bubble is determined by mapping the averages of the audio feature selected below to a color spectrum. Low values are mapped to red and positioned left, and high values are mapped to blue and positioned right.</p>
 
-    <h4 id="upper"> color with (r, g, b)</h3>
-    <div id="red">
+    <h4 id="upper"> color with </h4>
+    <div id="color">
       <a id="danceability" class="button active">Danceability</a>
       <a id="energy" class="button">Energy</a>
       <a id="instrumentalness" class="button">Instrumentalness</a>
@@ -27,8 +28,39 @@
       <a id="tempo" class="button">Tempo</a>
       <a id="valence" class="button">Valence</a>
     </div>
+        <h4 id="upper"> position by </h4>
+    <div id="toolbar">
+      <a id="circle" class="button active">Circle</a>
+      <!-- <a id="total_count" class="button">Count</a> -->
+      <a id="danceability" class="button">Danceability</a>
+      <a id="energy" class="button">Energy</a>
+      <a id="instrumentalness" class="button">Instrumentalness</a>
+      <a id="speechiness" class="button">Speechiness</a>
+      <a id="tempo" class="button">Tempo</a>
+      <a id="valence" class="button">Valence</a>
+    </div>
 <br>
-      <div id="green">
+
+    <div id="vis"></div><br><br><br>
+    <div id="colormap"></div>
+
+    <div id="dist"></div><br><br>
+
+    <h3 id="upper">characteristics by genre, viewed by year</h3>
+    <p> Each bubble represents a Spotify genre. The size of the bubble is scaled to the total number of tracks whose albums are tagged as that genre in selected given year. Color no longer maps to an audio feature; each genre is mapped to a given color that remains constant over time. The position of each bubble is determined by the two selected audio features below. Hover over YEAR to view the transformation of audio features from 1960-2017.</p>
+    <div id="timeline"></div>
+
+    <h4 id="upper"> x </h4>
+    <div id="timelineX">
+      <a id="danceability" class="button active">Danceability</a>
+      <a id="energy" class="button">Energy</a>
+      <a id="instrumentalness" class="button">Instrumentalness</a>
+      <a id="speechiness" class="button">Speechiness</a>
+      <a id="tempo" class="button">Tempo</a>
+      <a id="valence" class="button">Valence</a>
+    </div>
+    <h4 id="upper"> y </h4>
+    <div id="timelineY">
       <a id="danceability" class="button">Danceability</a>
       <a id="energy" class="button active">Energy</a>
       <a id="instrumentalness" class="button">Instrumentalness</a>
@@ -36,37 +68,6 @@
       <a id="tempo" class="button">Tempo</a>
       <a id="valence" class="button">Valence</a>
     </div>
-<br>
-
-      <div id="blue">
-      <a id="danceability" class="button">Danceability</a>
-      <a id="energy" class="button">Energy</a>
-      <a id="instrumentalness" class="button active">Instrumentalness</a>
-      <a id="speechiness" class="button">Speechiness</a>
-      <a id="tempo" class="button">Tempo</a>
-      <a id="valence" class="button">Valence</a>
-    </div>
-
-    <div id="vis"></div>
-
-    <h4 id="upper"> view by </h3>
-    <div id="toolbar">
-      <a id="circle" class="button active">Circle</a>
-      <a id="total_count" class="button">Count</a>
-      <a id="danceability" class="button">Danceability</a>
-      <a id="energy" class="button">Energy</a>
-      <a id="instrumentalness" class="button">Instrumentalness</a>
-      <a id="speechiness" class="button">Speechiness</a>
-      <a id="tempo" class="button">Tempo</a>
-      <a id="valence" class="button">Valence</a>
-    </div>
-
-    <div id="dist"></div>
-
-<!--     <div class="footer">
-      <p>A demonstration of animated bubble charts in JavaScript and D3.js</p>
-      <p><a href="http://vallandingham.me/bubble_charts_in_js.html">Blog Post</a> | <a href="https://github.com/vlandham/bubble_chart">Code</a></p>
-    </div> -->
 
     <h2> 
 
@@ -75,7 +76,9 @@
   <script src="lib/d3.js"></script>
   <script src="src/tooltip.js"></script>
   <script src="src/bubble_chart.js"></script>
-  <script src="src/histogram.js"></script>
+  <script src="src/colormap.js"></script>
+  <script src="src/timeline.js"></script>
+  <script src="https://unpkg.com/d3-3d/build/d3-3d.js"></script>
 
 </body>
 </html>

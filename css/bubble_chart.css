@@ -3,6 +3,7 @@ a, a:visited, a:active {
 }
 
 body {
+  margin-top: 50px;
   font-family: 'Work sans', sans-serif;
 }
 
