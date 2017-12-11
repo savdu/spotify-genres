@@ -5,8 +5,8 @@ function motionchart() {
 
   // Chart dimensions.
   var margin = {top: 35, right: 35, bottom: 35, left: 35},
-      width = 940 - margin.right,
-      height = 600 - margin.top - margin.bottom;
+      width = 700 - margin.right,
+      height = 500 - margin.top - margin.bottom;
 
   // Various scales. These domains make assumptions of data, naturally.
   var xScale = d3.scale.linear().domain([0, 1]).range([0, width]),

@@ -7,6 +7,23 @@ body {
   font-family: 'Work sans', sans-serif;
 }
 
+h1 {
+  font-weight:1000 !important;
+}
+
+p,h1,h3 {
+/*  margin-left: 10%;
+  margin-right: 10%;
+*/}
+
+.green {
+  color: #1ED760;
+}
+
+.center {
+  text-align: center;
+}
+
 #upper {
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -15,18 +32,20 @@ body {
 .container {
   max-width: 900px;
   margin: auto;
-  margin-left: 10%;
-  margin-right: 10%;
+  margin-left: 15%;
+  margin-right: 15%;
 }
 
 .button {
   min-width: 130px;
   padding: 4px 5px;
   cursor: pointer;
-  text-align: center;
-  font-size: 13px;
+  font-size: 10px;
   border: 1px solid #e0e0e0;
   text-decoration: none;
+  /*display: inline-block;*/
+  vertical-align: middle;
+  /*margin: 10px 0;*/
 }
 
 .button.active {
@@ -34,16 +53,24 @@ body {
   color: #fff;
 }
 
+.button:hover {
+  color: #1ED760;
+}
+
 
 #vis {
-  width: 940px;
-  height: 530px;
-  clear: both;
-  margin-bottom: 10px;
+  width: 800px;
+  height: 450px;
+  /*clear: both;*/
+
+  display: block;
+  margin: auto;
+  text-align: center;
+  /*margin-bottom: 10px;*/
 }
 
 #toolbar {
-  margin-top: 10px;
+  /*margin-top: 10px;*/
 }
 
 .year {

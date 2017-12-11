@@ -10,8 +10,10 @@
 
 function bubbleChart() {
   // Constants for sizing
-  var width = 940;
-  var height = 600;
+  var width = 800;
+  var height = 450;
+
+  var colormap = 'nonlinear'
 
   // tooltip for mouseover functionality
   var tooltip = floatingTooltip('gates_tooltip', 240);
@@ -93,44 +95,44 @@ function bubbleChart() {
 
   var colorScale = d3.scale.category10();
 
-  function stats_to_rgb(d) {
+  function colormapping(d) {
 
-    // charR = rgb['r'];
-    // charG = rgb['g'];
-    // charB = rgb['b'];
-
+    // scale data 0 to 1
     scale = ((d[color] - min[color]) / (max[color] - min[color]));
-    // console.log(scale);
 
+    // normalize left skewed
+    if ((color == 'instrumentalness') || (color == 'speechiness')) {
+      scale = Math.pow(scale, 1/3);
+      newMin = Math.pow(min[color], 1/3);
+      newMax = Math.pow(max[color], 1/3);
+      scale = ((scale - newMin) / (newMax - newMin));
+    }
 
+    // normalize right skewed
+    if ((color == 'danceability') || (color == 'energy')) {
+      scale = scale * scale;
+      newMin = min[color] * min[color];
+      newMax = max[color] * max[color];
+      scale = ((scale - newMin) / (newMax - newMin));
+    }
+
+    if (colormap == 'nonlinear') {
+      // nonlinear mapping for normally distributed
+      mu = 0.5; sig = 0.25;
+      scale = 0.5 * (1 + erf((scale - mu) / (sig * Math.sqrt(2))));          
+    }
 
     // if (scale <= 0.5) scale = 2 * scale*scale;
     // else scale = (2-Math.sqrt(2))*scale*scale+(-1+Math.sqrt(2));
 
     // console.log(scale);
-
-    return d3.interpolateLab("red", "blue")(scale); // "rgb(142, 92, 109)"
-
-
-
-
-    r = 255 - Math.round((d[color] - min[color]) / (max[color] - min[color]) * 255);
-    g = 255 - Math.round((d[color] - min[color]) / (max[color] - min[color]) * 255);
-    b = 255 - Math.round((d[color] - min[color]) / (max[color] - min[color]) * 255);
-
-    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-
-    t = Math.round((d[color] - min[color] / max[color] - min[color]));
-
-    // return colorScale(t);
-
-    // return d3.interpolateRdYlBu(t)
+    return d3.interpolateLab("yellow", "blue")(scale);
   }
 
   // Sizes bubbles based on their area instead of raw radius
   var radiusScale = d3.scale.pow()
     .exponent(0.5)
-    .range([2, 40]);
+    .range([2, 30]);
 
   /*
    * This data manipulation function takes the raw data from
@@ -225,8 +227,8 @@ function bubbleChart() {
       .classed('bubble', true)
       .attr('r', 0)
 
-      .attr('fill', function (d) { return stats_to_rgb(d); })
-      .attr('stroke', function (d) { return d3.rgb(stats_to_rgb(d)).darker(); })
+      .attr('fill', function (d) { return colormapping(d); })
+      .attr('stroke', function (d) { return d3.rgb(colormapping(d)).darker(); })
 
       .attr('stroke-width', 2)
       .on('mouseover', showDetail)
@@ -366,7 +368,7 @@ function bubbleChart() {
   function hideDetail(d) {
     // reset outline
     d3.select(this)
-      .attr('stroke', d3.rgb(stats_to_rgb(d)).darker());
+      .attr('stroke', d3.rgb(colormapping(d)).darker());
 
     tooltip.hideTooltip();
   }
@@ -391,8 +393,16 @@ function bubbleChart() {
     color = characteristic;
 
     bubbles
-      .attr('fill', function (d) { return stats_to_rgb(d); })
-      .attr('stroke', function (d) { return d3.rgb(stats_to_rgb(d)).darker(); })
+      .attr('fill', function (d) { return colormapping(d); })
+      .attr('stroke', function (d) { return d3.rgb(colormapping(d)).darker(); })
+  }
+
+  chart.updateColorMapping = function(mapping) {
+    colormap = mapping;
+
+    bubbles
+      .attr('fill', function (d) { return colormapping(d); })
+      .attr('stroke', function (d) { return d3.rgb(colormapping(d)).darker(); })
   }
 
   // return the chart function from closure.
@@ -462,46 +472,25 @@ function setupButtons() {
       // the currently clicked button.
       myBubbleChart.updateColor(buttonId);
     });
-
-    // d3.select('#green')
-    // .selectAll('.button')
-    // .on('click', function () {
+    d3.select('#colormapping')
+    .selectAll('.button')
+    .on('click', function () {
       
-    //   // Remove active class from all buttons
-    //   d3.select('#green').selectAll('.button').classed('active', false);
-    //   // Find the button just clicked
-    //   var button = d3.select(this);
+      // Remove active class from all buttons
+      d3.select('#colormapping').selectAll('.button').classed('active', false);
+      // Find the button just clicked
+      var button = d3.select(this);
 
-    //   // Set it as the active button
-    //   button.classed('active', true);
+      // Set it as the active button
+      button.classed('active', true);
 
-    //   // Get the id of the button
-    //   var buttonId = button.attr('id');
+      // Get the id of the button
+      var buttonId = button.attr('id');
 
-    //   // Toggle the bubble chart based on
-    //   // the currently clicked button.
-    //   myBubbleChart.updateColor('g', buttonId);
-    // });
-
-    // d3.select('#blue')
-    // .selectAll('.button')
-    // .on('click', function () {
-      
-    //   // Remove active class from all buttons
-    //   d3.select('#blue').selectAll('.button').classed('active', false);
-    //   // Find the button just clicked
-    //   var button = d3.select(this);
-
-    //   // Set it as the active button
-    //   button.classed('active', true);
-
-    //   // Get the id of the button
-    //   var buttonId = button.attr('id');
-
-    //   // Toggle the bubble chart based on
-    //   // the currently clicked button.
-    //   myBubbleChart.updateColor('b', buttonId);
-    // });
+      // Toggle the bubble chart based on
+      // the currently clicked button.
+      myBubbleChart.updateColorMapping(buttonId);
+    });
 
 }
 

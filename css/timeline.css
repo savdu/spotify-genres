@@ -7,6 +7,11 @@ text {
   font: 10px sans-serif;
 }
 
+#dist{
+  margin-left: 20%;
+  margin-right:20%;
+}
+
 .dot {
   stroke: #000;
 }
@@ -34,4 +39,12 @@ text {
   fill: none;
   pointer-events: all;
   cursor: ew-resize;
+}
+
+#timelineX {
+  text-align: center;
+}
+
+#timelineY {
+  text-align: center;
 }

@@ -1,13 +1,13 @@
 function histogram() {
 
     var chart = function chart(selector, rawData) {
-        data = getCharData(rawData, 'danceability');
+        data = getCharData(rawData, 'instrumentalness');
 
         // A formatter for counts.
         var formatCount = d3.format(",.0f");
 
         var margin = {top: 20, right: 30, bottom: 30, left: 30},
-        width = 960 - margin.left - margin.right,
+        width = 750 - margin.left - margin.right,
         height = 500 - margin.top - margin.bottom;
 
         var max = d3.max(data);
@@ -70,39 +70,29 @@ return chart;
 }
 
 
-// var allHistogram = histogram();
+var allHistogram = histogram();
 
 
-// var color = "steelblue";
+var color = "steelblue";
 
-// // Generate a 1000 data points using normal distribution with mean=20, deviation=5
-// // var values = d3.range(1000).map(d3.random.normal(20, 5));
-// // console.log(values);
-// var data = d3.csv('data/track-stats-genre.csv', display);
+var data = d3.csv('data/track-stats-genre.csv', display);
 
-// function display(error, data) {
-//   if (error) {
-//     console.log(error);
-// }
-//   // values=[];
-//   // data.forEach(function(d) {
-//   //   values.push(parseFloat(d.instrumentalness));
-//   // });
+function display(error, data) {
+    if (error) {
+        console.log(error);
+    }
+    allHistogram('#dist', data);
+}
 
-//   // values = getCharData(data, 'danceability');
-//   // allHistogram('#dist', values);
-//   allHistogram('#dist', data);
-// }
+function getCharData(data, characteristic) {
+    values=[];
 
-// function getCharData(data, characteristic) {
-//     values=[];
+    data.forEach(function(d) {
+        values.push(Math.pow(parseFloat(d[characteristic]),1/2));
+    });
 
-//     data.forEach(function(d) {
-//         values.push(parseFloat(d[characteristic]));
-//     });
-
-//     return values;
-// }
+    return values;
+}
 
 // function setupButtons() {
 
@@ -115,9 +105,6 @@ return chart;
 //       // Get the id of the button
 //       var buttonId = button.attr('id');
 
-//       // Toggle the bubble chart based on
-//       // the currently clicked button.
-//       // myBubbleChart.toggleDisplay(buttonId);
 //       console.log(buttonId);
 //   });
 // }
