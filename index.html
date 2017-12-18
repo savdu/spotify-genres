@@ -13,7 +13,7 @@
     <h1 class="green">Visualizing and predicting Spotify genre characteristics</h1><br>
  
     <h3 id="upper">characteristics by genre, viewed by year</h3>
-    <p> Each bubble represents a Spotify genre. The size of the bubble is scaled to the total number of tracks whose albums are tagged as that genre in selected given year. Color no longer maps to an audio feature; each genre is mapped to a given color that remains constant over time. The position of each bubble is determined by the two selected audio features below. <br><br>Hover over YEAR to view the transformation of audio features from 1960-2017.</p>
+    <p> Each bubble represents a Spotify genre. The size of the bubble is scaled to the total number of tracks whose albums are tagged as that genre in selected given year. Color no longer maps to an audio feature; each genre is mapped to a given color that remains constant over time. The position of each bubble is determined by the two selected audio features below. <br><br><b>Hover over YEAR to view the transformation of audio features from 1960-2017.</b></p>
 
     <div id="timeline" class="center"></div>
 
@@ -35,7 +35,14 @@
     </div><br><br><br>
 
     <h3 id="upper">characteristics by genre, averaged over all years</h3>
-    <p> Each bubble represents a Spotify genre. The size of the bubble is scaled to the total number of tracks whose albums are tagged as that genre from 1960 to mid 2017. The color of each bubble is determined by mapping the averages of the audio feature selected below to a color spectrum. Low values are mapped to red and positioned left, and high values are  mapped to blue and positioned right.</p><br>
+    <p> Each bubble represents a Spotify genre. The size of the bubble is scaled to the total number of tracks whose albums are tagged as that genre from 1960 to mid 2017. The color of each bubble is determined by mapping the averages of the audio feature selected below to a color spectrum. Low values are mapped to yellow and positioned left, and high values are  mapped to blue and positioned right.</p><br>
+
+<!-- 
+    <div id="colormapping"> colormapping:
+      <a id="linear" class="button">Linear</a>
+      <a id="nonlinear" class="button active">Nonlinear</a>
+      <a id="hsv" class="button" onclick="toggleColors()">HSV</a>
+    </div><br> -->
 
     <div id="color">color with:
       <a id="danceability" class="button active">Danceability</a>
@@ -45,10 +52,23 @@
       <a id="tempo" class="button">Tempo</a>
       <a id="valence" class="button">Valence</a>
     </div><br>
-    <div id="colormapping"> colormapping:
-      <a id="linear" class="button">Linear</a>
-      <a id="nonlinear" class="button active">Nonlinear</a>
+<!--     <div id="color2">color with:
+      <a id="danceability" class="button">Danceability</a>
+      <a id="energy" class="button active">Energy</a>
+      <a id="instrumentalness" class="button">Instrumentalness</a>
+      <a id="speechiness" class="button">Speechiness</a>
+      <a id="tempo" class="button">Tempo</a>
+      <a id="valence" class="button">Valence</a>
     </div><br>
+    <div id="color3">color with:
+      <a id="danceability" class="button">Danceability</a>
+      <a id="energy" class="button">Energy</a>
+      <a id="instrumentalness" class="button active">Instrumentalness</a>
+      <a id="speechiness" class="button">Speechiness</a>
+      <a id="tempo" class="button">Tempo</a>
+      <a id="valence" class="button">Valence</a>
+    </div><br> -->
+
     <div id="toolbar"> position by:
       <a id="circle" class="button active">Circle</a>
       <a id="danceability" class="button">Danceability</a>
@@ -62,7 +82,7 @@
     <!-- <div id="dist" class="center"></div> -->
 
     <div id="vis"></div>
-    <div id="colormap" class="center"></div>
+    <!-- <div id="colormap" class="center"></div> -->
 
   </div>
 

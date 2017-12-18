@@ -5,11 +5,9 @@
  *
  * Organization and style inspired by:
  * https://bost.ocks.org/mike/chart/
- *
  */
 
 function bubbleChart() {
-  // Constants for sizing
   var width = 800;
   var height = 450;
 
@@ -62,6 +60,8 @@ function bubbleChart() {
   }
 
   var color = 'danceability';
+  var color2 = 'energy';
+  var color3 = 'instrumentalness'
 
   var rgb = {
     'r': 'danceability',
@@ -95,37 +95,61 @@ function bubbleChart() {
 
   var colorScale = d3.scale.category10();
 
+  // returns value scaled to [0, 1]
+  function scaleValue(d, ch) {
+    // return (d[ch] - min[ch]) / (max[ch] - min[ch])
+    return d[ch+'_dist'] / 115;
+  }
+
+  function hsv2hsl(hue,sat,val){
+
+         h =  hue; //Hue stays the same
+
+          //Saturation is very different between the two color spaces
+          //If (2-sat)*val < 1 set it to sat*val/((2-sat)*val)
+          //Otherwise sat*val/(2-(2-sat)*val)
+          //Conditional is not operating with hue, it is reassigned!
+         s = sat*val/((hue=(2-sat)*val)<1?hue:2-hue); 
+      
+         l = hue/2; //Lightness is (2-sat)*val/2
+          //See reassignment of hue above
+      
+      return d3.hsl(360 * h,s,l);
+  }
+
   function colormapping(d) {
 
-    // scale data 0 to 1
-    scale = ((d[color] - min[color]) / (max[color] - min[color]));
-
-    // normalize left skewed
-    if ((color == 'instrumentalness') || (color == 'speechiness')) {
-      scale = Math.pow(scale, 1/3);
-      newMin = Math.pow(min[color], 1/3);
-      newMax = Math.pow(max[color], 1/3);
-      scale = ((scale - newMin) / (newMax - newMin));
+    if (colormap == 'hsv') {
+      return hsv2hsl( scaleValue(d, color), scaleValue(d, color2), scaleValue(d, color3) );
     }
 
-    // normalize right skewed
-    if ((color == 'danceability') || (color == 'energy')) {
-      scale = scale * scale;
-      newMin = min[color] * min[color];
-      newMax = max[color] * max[color];
-      scale = ((scale - newMin) / (newMax - newMin));
-    }
+
+    // // normalize left skewed
+    // if ((color == 'instrumentalness') || (color == 'speechiness')) {
+    //   scale = Math.pow(scale, 1/3);
+    //   newMin = Math.pow(min[color], 1/3);
+    //   newMax = Math.pow(max[color], 1/3);
+    //   scale = ((scale - newMin) / (newMax - newMin));
+    // }
+
+    // // normalize right skewed
+    // if ((color == 'danceability') || (color == 'energy')) {
+    //   scale = scale * scale;
+    //   newMin = min[color] * min[color];
+    //   newMax = max[color] * max[color];
+    //   scale = ((scale - newMin) / (newMax - newMin));
+    // }
 
     if (colormap == 'nonlinear') {
-      // nonlinear mapping for normally distributed
-      mu = 0.5; sig = 0.25;
-      scale = 0.5 * (1 + erf((scale - mu) / (sig * Math.sqrt(2))));          
+
+      scale = scaleValue(d, color);
+      // // nonlinear mapping for normally distributed
+      // mu = 0.5; sig = 0.25;
+      // scale = 0.5 * (1 + erf((scale - mu) / (sig * Math.sqrt(2))));          
     }
 
-    // if (scale <= 0.5) scale = 2 * scale*scale;
-    // else scale = (2-Math.sqrt(2))*scale*scale+(-1+Math.sqrt(2));
+    else scale = (d[color] - min[color]) / (max[color] - min[color]);
 
-    // console.log(scale);
     return d3.interpolateLab("yellow", "blue")(scale);
   }
 
@@ -172,6 +196,13 @@ function bubbleChart() {
         speechiness: d.speechiness,
         tempo: d.tempo,
         valence: d.valence,
+        danceability_dist: d.danceability_dist,
+        energy_dist: d.energy_dist,
+        instrumentalness_dist: d.instrumentalness_dist,
+        speechiness_dist: d.speechiness_dist,
+        tempo_dist: d.tempo_dist,
+        valence_dist: d.valence_dist,
+
         x: Math.random() * 900,
         y: Math.random() * 800
       };
@@ -230,7 +261,7 @@ function bubbleChart() {
       .attr('fill', function (d) { return colormapping(d); })
       .attr('stroke', function (d) { return d3.rgb(colormapping(d)).darker(); })
 
-      .attr('stroke-width', 2)
+      .attr('stroke-width', 1.5)
       .on('mouseover', showDetail)
       .on('mouseout', hideDetail);
 
@@ -388,9 +419,11 @@ function bubbleChart() {
       alignBubbles(displayName);
   };
 
-  chart.updateColor = function(characteristic) {
-    // rgb[color] = characteristic;
-    color = characteristic;
+  chart.updateColor = function(i, ch) {
+    
+    if (i == 1) color = ch;
+    else if (i == 2) color2 = ch;
+    else color3 = ch;
 
     bubbles
       .attr('fill', function (d) { return colormapping(d); })
@@ -428,6 +461,21 @@ function display(error, data) {
   myBubbleChart('#vis', data);
 }
 
+
+function toggleColors(c) {
+  // if (c == 'hsv') {
+  //   console.log(d3.select('#color').selectAll('.button'));
+  //   d3.select('#color2').selectAll('.button').style('display', "show");
+  //   d3.select('#color3').selectAll('.button').style('display', "show");
+  // }
+  // else {
+  //   d3.select('#color2').selectAll('.button').style('display', "none");
+  //   d3.select('#color3').selectAll('.button').style('display', "none");
+  // }
+}
+
+
+
 /*
  * Sets up the layout buttons to allow for toggling between view modes.
  */
@@ -456,22 +504,33 @@ function setupButtons() {
     d3.select('#color')
     .selectAll('.button')
     .on('click', function () {
-      
-      // Remove active class from all buttons
       d3.select('#color').selectAll('.button').classed('active', false);
-      // Find the button just clicked
       var button = d3.select(this);
-
-      // Set it as the active button
       button.classed('active', true);
-
-      // Get the id of the button
       var buttonId = button.attr('id');
-
-      // Toggle the bubble chart based on
-      // the currently clicked button.
-      myBubbleChart.updateColor(buttonId);
+      myBubbleChart.updateColor(1, buttonId);
     });
+
+    d3.select('#color2')
+    .selectAll('.button')
+    .on('click', function () {
+      d3.select('#color2').selectAll('.button').classed('active', false);
+      var button = d3.select(this);
+      button.classed('active', true);
+      var buttonId = button.attr('id');
+      myBubbleChart.updateColor(2, buttonId);
+    });
+
+    d3.select('#color3')
+    .selectAll('.button')
+    .on('click', function () {
+      d3.select('#color3').selectAll('.button').classed('active', false);
+      var button = d3.select(this);
+      button.classed('active', true);
+      var buttonId = button.attr('id');
+      myBubbleChart.updateColor(3, buttonId);
+    });
+
     d3.select('#colormapping')
     .selectAll('.button')
     .on('click', function () {
@@ -489,6 +548,7 @@ function setupButtons() {
 
       // Toggle the bubble chart based on
       // the currently clicked button.
+      toggleColors(buttonId);
       myBubbleChart.updateColorMapping(buttonId);
     });
 

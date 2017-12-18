@@ -1,5 +1,23 @@
 function motionchart() {
 
+  var min = {
+    'danceability': 1,
+    'energy': 1,
+    'instrumentalness': 1,
+    'speechiness': 1,
+    'tempo': 100,
+    'valence': 1
+  }
+
+  var max = {
+    'danceability': 0,
+    'energy': 0,
+    'instrumentalness': 0,
+    'speechiness': 0,
+    'tempo': 0,
+    'valence': 0
+  }
+
   var charX = 'danceability',
       charY = 'energy';
 
@@ -26,13 +44,13 @@ function motionchart() {
       .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
   // Add the x-axis.
-  svg.append("g")
+  var XAxis = svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
       .call(xAxis);
 
   // Add the y-axis.
-  svg.append("g")
+  var YAxis = svg.append("g")
       .attr("class", "y axis")
       .call(yAxis);
 
@@ -94,8 +112,8 @@ function motionchart() {
   }
 
   function hideDetail(d) {
-    // d3.select(this)
-      // .attr('stroke', d3.rgb(stats_to_rgb(d)).darker());
+    d3.select(this)
+      .attr('stroke', function(d) { return d3.rgb(colorScale(d.genre)).darker(); })
     tooltip.hideTooltip();
   }
 
@@ -105,6 +123,8 @@ function motionchart() {
         .attr("cy", function(d) { return yScale(d[charY]); })
         .attr("r", function(d) { return radiusScale(d.total_count); })
       .style("fill", function(d) { return colorScale(d.genre); })
+            .attr('stroke', function(d) { return d3.rgb(colorScale(d.genre)).darker(); })
+
   }
 
     // Defines a sort order so that the smallest dots are drawn on top.
@@ -114,7 +134,7 @@ function motionchart() {
 
   var mouseYear = 1960;
 
-    // Add an overlay for the year label interaction.
+  // Add an overlay for the year label interaction.
   var box = label.node().getBBox();
   var overlay = svg.append("rect")
     .attr("class", "overlay")
@@ -123,11 +143,18 @@ function motionchart() {
     .attr("width", box.width)
     .attr("height", box.height);
 
-
-
-
+  function initializeStats(rawData) {
+    characteristics = ['total_count', 'danceability', 'energy', 'instrumentalness', 'speechiness','tempo', 'valence'];
+    for (i = 0; i < characteristics.length; i++) {
+      stat = characteristics[i];
+      min[stat] = d3.min(rawData, function (d) { return +d[stat]; });
+      max[stat] = d3.max(rawData, function (d) { return +d[stat]; });
+    }
+  }
 
   var chart = function chart(selector, rawData) {
+
+    initializeStats(rawData);
 
     overlay.on("mouseover", enableInteraction);
 
@@ -140,6 +167,7 @@ function motionchart() {
       .enter().append("circle")
         .attr("class", "dot")
         .style("fill", function(d) { return colorScale(d.genre); })
+        .attr('stroke', function(d) { return d3.rgb(colorScale(d.genre)).darker(); })
         // .call(position)
         .sort(order)
         .on('mouseover', showDetail)
@@ -199,7 +227,7 @@ function motionchart() {
           energy: interpolateValues(d.energy,year,currYear),
           instrumentalness: interpolateValues(d.instrumentalness, year, currYear),
           speechiness: interpolateValues(d.speechiness, year,currYear),
-          // tempo: interpolateValues(d.tempo, year,currYear),
+          tempo: interpolateValues(d.tempo, year,currYear),
           valence: interpolateValues(d.valence,year,currYear)
         };
       });
@@ -233,18 +261,23 @@ function motionchart() {
   toggleDisplay = function (axis, characteristic) {
 
     if (axis == 'X') {
+      console.log(min[characteristic]);
       charX = characteristic;
-      // if (characteristic == 'tempo') xScale = d3.scale.linear().domain([50, 150]).range([0, width]);
-      // else xScale = d3.scale.linear().domain([0, 1]).range([0, width]);
+      xScale = d3.scale.linear().domain([min[characteristic], max[characteristic]]).range([0, width]);
+      xAxis = d3.svg.axis().orient("bottom").scale(xScale).ticks(12, d3.format(",d"));
     }
 
     else {
       charY = characteristic;
-      // if (characteristic == 'tempo') yScale = d3.scale.linear().domain([50, 150]).range([0, width]);
-      // else yScale = d3.scale.linear().domain([0, 1]).range([0, width]);
+      yScale = d3.scale.linear().domain([min[characteristic], max[characteristic]]).range([height, 0]);
+      yAxis = d3.svg.axis().scale(yScale).orient("left");
     }
 
+    console.log(min[characteristic], max[characteristic]);
+
     // update labels
+    XAxis.call(xAxis);
+    YAxis.call(yAxis);
     labelX.text(charX);
     labelY.text(charY);
 
