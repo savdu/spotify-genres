@@ -122,9 +122,8 @@ function motionchart() {
     dot .attr("cx", function(d) { return xScale(d[charX]); })
         .attr("cy", function(d) { return yScale(d[charY]); })
         .attr("r", function(d) { return radiusScale(d.total_count); })
-      .style("fill", function(d) { return colorScale(d.genre); })
-            .attr('stroke', function(d) { return d3.rgb(colorScale(d.genre)).darker(); })
-
+        .style("fill", function(d) { return colorScale(d.genre); })
+        .attr('stroke', function(d) { return d3.rgb(colorScale(d.genre)).darker(); })
   }
 
     // Defines a sort order so that the smallest dots are drawn on top.
@@ -280,10 +279,6 @@ function motionchart() {
     YAxis.call(yAxis);
     labelX.text(charX);
     labelY.text(charY);
-
-    // update bubbles
-    // chart();
-    // updateDisplay();
   }
 
   return chart;
@@ -342,7 +337,6 @@ function display(error, data) {
   if (error) {
     console.log(error);
   }
-
   motionchart1('#timeline', data);
 };
 

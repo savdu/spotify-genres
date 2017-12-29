@@ -9,12 +9,23 @@ for (var i=0; i < width; i+= sectionWidth ) {
     newData.push(i);
 }
 
-var colorScaleLin = d3.scale.linear()
+
+var colorScaleLin1 = d3.scale.linear()
       .domain([0, newData.length-1])
-      .interpolate(d3.interpolateLab)
+      .interpolate(d3.interpolateRgb)
       .range(['yellow', 'blue']);
 
-var colorScalePow = d3.scale.pow().exponent(.6)
+var colorScaleLin = d3.scale.linear()
+      .domain([0, newData.length-1])
+      .interpolate(d3.interpolateHsl)
+      .range(['yellow', 'blue']);
+
+// var colorScalePow = d3.scale.pow().exponent(.6)
+//       .domain([0, newData.length-1])
+//       .interpolate(d3.interpolateLab)
+//       .range(['yellow', 'blue']);
+
+var colorScaleLin2 = d3.scale.linear()
       .domain([0, newData.length-1])
       .interpolate(d3.interpolateLab)
       .range(['yellow', 'blue']);
@@ -59,7 +70,7 @@ vis.selectAll('rect')
         .attr("y", 0)
         .attr("height", height)
         .attr("width", sectionWidth)
-        .attr('fill', function(d, i) { return colorScaleLin(i)})
+        .attr('fill', function(d, i) { return colorScaleLin1(i)})
         .text('linear');
 vis.append("text")
   .attr("class", "x axis")
@@ -67,7 +78,7 @@ vis.append("text")
   .attr("x", width * 9 / 10)
   .attr("y", height / 2)
   .attr("dy", ".35em")
-  .text("linear")
+  .text("RGB")
   .style("fill", "white");
 
 
@@ -75,21 +86,28 @@ vis.append("text")
 ////////////////////////////////////////////////////////////////
 
 
-// var vis2 = d3.select("#colormap")
-//     .append("svg")
-//         .attr("width", width)
-//         .attr("height", height);
+var vis2 = d3.select("#colormap")
+    .append("svg")
+        .attr("width", width)
+        .attr("height", height);
 
-// vis2.selectAll('rect')
-//     .data(newData)
-//     .enter()
-//     .append('rect')
-//         .attr("x", function(d) { return d; })
-//         .attr("y", 0)
-//         .attr("height", height)
-//         .attr("width", sectionWidth)
-//         .attr('fill', function(d, i) { return colorScalePow(i)});
-
+vis2.selectAll('rect')
+    .data(newData)
+    .enter()
+    .append('rect')
+        .attr("x", function(d) { return d; })
+        .attr("y", 0)
+        .attr("height", height)
+        .attr("width", sectionWidth)
+        .attr('fill', function(d, i) { return colorScaleLin(i)});
+vis2.append("text")
+  .attr("class", "x axis")
+  .style("font-family", "Work sans")
+  .attr("x", width * 9 / 10)
+  .attr("y", height / 2)
+  .attr("dy", ".35em")
+  .text("HSL")
+  .style("fill", "white");
 
 ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////
@@ -110,20 +128,22 @@ vis3.selectAll('rect')
         .attr("y", 0)
         .attr("height", height)
         .attr("width", sectionWidth)
-        .attr('fill', function(d, i) {
+        .attr('fill', function(d, i) { return colorScaleLin2(i)});
+
+          // function(d, i) {
 
           // scale to [0, 1]
-          i /= divisions;
-          i = 0.5 * (1 + erf((i - mu) / (sig * Math.sqrt(2))));          
+        //   i /= divisions;
+        //   i = 0.5 * (1 + erf((i - mu) / (sig * Math.sqrt(2))));          
 
-          // // scale to [0, 1]
-          // i /= divisions;
+        //   // // scale to [0, 1]
+        //   // i /= divisions;
 
-          // if (i <= 0.5) i = 2 * i*i;
-          // else i = (2-Math.sqrt(2))*i*i+(-1+Math.sqrt(2));
+        //   // if (i <= 0.5) i = 2 * i*i;
+        //   // else i = (2-Math.sqrt(2))*i*i+(-1+Math.sqrt(2));
 
-          return d3.interpolateLab("yellow", "blue")(i);
-        });
+        //   return d3.interpolateLab("yellow", "blue")(i);
+        // });
 
 vis3.append("text")
   .style("fill", "white")
@@ -131,6 +151,6 @@ vis3.append("text")
   .attr("x", width * 9 / 10)
   .attr("y", height / 2)
   .attr("dy", ".35em")
-  .text("nonlinear")
+  .text("LAB")
 
 setupButtons();

@@ -121,6 +121,7 @@ function bubbleChart() {
 
     if (colormap == 'hsv') {
       return hsv2hsl( scaleValue(d, color), scaleValue(d, color2), scaleValue(d, color3) );
+      // return d3.rgb( 255*scaleValue(d, color), 255*scaleValue(d, color2), 255*scaleValue(d, color3) );
     }
 
 
