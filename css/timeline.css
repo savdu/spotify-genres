@@ -49,3 +49,8 @@ text {
 #timelineY {
   text-align: center;
 }
+
+.slidecontainer {
+  text-align: center;
+  margin-bottom: 20px
+}

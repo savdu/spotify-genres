@@ -77,7 +77,7 @@ function motionchart() {
       .attr("text-anchor", "end")
       .attr("y", height - 24)
       .attr("x", width)
-      .text("Year");
+      .text("1960");
 
   var tooltip = floatingTooltip('gates_tooltip', 240);
   function showDetail(d) {
@@ -150,6 +150,8 @@ function motionchart() {
       max[stat] = d3.max(rawData, function (d) { return +d[stat]; });
     }
   }
+
+  var YEAR = 1960;
 
   var chart = function chart(selector, rawData) {
 
@@ -281,14 +283,23 @@ function motionchart() {
     labelY.text(charY);
   }
 
+  // toggleYear = function(year) {
+  //   mouseYear = year;
+  // }
+
   return chart;
 };
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function setupButtons() {
+
+  d3.select('#myRange')
+    .on('input', function() {
+      year = this.value;
+      toggleYear(year);
+    })
 
   d3.select('#timelineX')
     .selectAll('.button')

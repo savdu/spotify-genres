@@ -12,30 +12,9 @@
   <div class="container">
     <h1 class="green">Visualizing and predicting Spotify genre characteristics</h1><br>
  
-    <h3 id="upper">characteristics by genre, viewed by year</h3>
-    <p> Each bubble represents a Spotify genre. The size of the bubble is scaled to the total number of tracks whose albums are tagged as that genre in selected given year. Color no longer maps to an audio feature; each genre is mapped to a given color that remains constant over time. The position of each bubble is determined by the two selected audio features below. <br><br><b>Hover over YEAR to view the transformation of audio features from 1960-2017.</b></p>
+    <h3 id="upper">similarities between genres and correlations between characteristics</h3>
 
-    <div id="timeline" class="center"></div>
-
-    <div id="timelineX"> x:
-      <a id="danceability" class="button active">Danceability</a>
-      <a id="energy" class="button">Energy</a>
-      <a id="instrumentalness" class="button">Instrumentalness</a>
-      <a id="speechiness" class="button">Speechiness</a>
-      <a id="tempo" class="button">Tempo</a>
-      <a id="valence" class="button">Valence</a>
-    </div><br>
-    <div id="timelineY"> y:
-      <a id="danceability" class="button">Danceability</a>
-      <a id="energy" class="button active">Energy</a>
-      <a id="instrumentalness" class="button">Instrumentalness</a>
-      <a id="speechiness" class="button">Speechiness</a>
-      <a id="tempo" class="button">Tempo</a>
-      <a id="valence" class="button">Valence</a>
-    </div><br><br><br>
-
-    <h3 id="upper">characteristics by genre, averaged over all years</h3>
-    <p> Each bubble represents a Spotify genre. The size of the bubble is scaled to the total number of tracks whose albums are tagged as that genre from 1960 to mid 2017. The color of each bubble is determined by mapping the averages of the audio feature selected below to a color spectrum. Low values are mapped to yellow and positioned left, and high values are  mapped to blue and positioned right.</p><br>
+    <p>The bubble chart below represents each genre as a bubble. The <b>size</b> of a bubble scales to the total number of tracks whose albums are tagged as that genre, the <b>color<b> is calculated based on the genre's average values for the selected musical characteristic, and the <b>horizontal position</b> of is based on the average value for another selected characteristic. Hover over the bubbles to view genres' musical characteristics. </p><br>
 
 <!-- 
     <div id="colormapping"> colormapping:
@@ -44,7 +23,7 @@
       <a id="hsv" class="button" onclick="toggleColors()">HSV</a>
     </div><br> -->
 
-    <div id="color">color with:
+    <div id="color">color:
       <a id="danceability" class="button active">Danceability</a>
       <a id="energy" class="button">Energy</a>
       <a id="instrumentalness" class="button">Instrumentalness</a>
@@ -69,7 +48,7 @@
       <a id="valence" class="button">Valence</a>
     </div><br> -->
 
-    <div id="toolbar"> position by:
+    <div id="toolbar"> position:
       <a id="circle" class="button active">Circle</a>
       <a id="danceability" class="button">Danceability</a>
       <a id="energy" class="button">Energy</a>
@@ -83,6 +62,33 @@
 
     <div id="vis"></div>
     <!-- <div id="colormap" class="center"></div> -->
+
+    <h3 id="upper">changing musical relationships</h3>
+    <p>The motion graph below represents each genre as a bubble. The <b>size</b> of a bubble scales to the total number of tracks whose albums are tagged as that genre in the selected year, the <b>color</b> functions as the genre identifier and remains consistent over changes in year, and the <b>position</b> on the (x,y) coordinate system is based on the average values for two selected musical characteristic. Hover over the bubbles to view genres' musical characteristics. <br><br><b> Adjust the slider to view the transformation of audio features from 1960 to 2017.</b></p>
+
+    <div id="timeline" class="center"></div>
+
+<!--     <div class="slidecontainer">
+      <input type="range" min="1960" max="2017" value="1960" class="slider" id="myRange">
+    </div> -->
+
+    <div id="timelineX"> x:
+      <a id="danceability" class="button active">Danceability</a>
+      <a id="energy" class="button">Energy</a>
+      <a id="instrumentalness" class="button">Instrumentalness</a>
+      <a id="speechiness" class="button">Speechiness</a>
+      <a id="tempo" class="button">Tempo</a>
+      <a id="valence" class="button">Valence</a>
+    </div><br>
+    <div id="timelineY"> y:
+      <a id="danceability" class="button">Danceability</a>
+      <a id="energy" class="button active">Energy</a>
+      <a id="instrumentalness" class="button">Instrumentalness</a>
+      <a id="speechiness" class="button">Speechiness</a>
+      <a id="tempo" class="button">Tempo</a>
+      <a id="valence" class="button">Valence</a>
+    </div><br><br><br>
+
 
   </div>
 
